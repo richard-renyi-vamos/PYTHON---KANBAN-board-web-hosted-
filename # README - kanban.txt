@@ -1,0 +1,66 @@
+CHATGPT CONVERSATION
+
+***************
+
+You said:
+create a web hosted KANBAN board in python
+ChatGPT said:
+Here's a simple web-hosted Kanban board built using Flask (backend) and HTML/CSS/JavaScript (frontend). It will support adding, moving, and deleting tasks dynamically.
+
+Kanban Board
+
+Answer in chat instead
+This is the backend using Flask. Now, you need a frontend (kanban.html) with JavaScript to interact with the API. Let me know if you need that as well! 🚀
+
+***************
+
+  from flask import Flask, render_template, request, jsonify
+
+app = Flask(__name__)
+
+# Sample Kanban board structure
+kanban_data = {
+    "To Do": [],
+    "In Progress": [],
+    "Done": []
+}
+
+@app.route('/')
+def index():
+    return render_template("kanban.html", kanban_data=kanban_data)
+
+@app.route('/add_task', methods=['POST'])
+def add_task():
+    data = request.get_json()
+    column = data.get("column", "To Do")
+    task = data.get("task", "New Task")
+    kanban_data[column].append(task)
+    return jsonify({"status": "success", "kanban_data": kanban_data})
+
+@app.route('/move_task', methods=['POST'])
+def move_task():
+    data = request.get_json()
+    task = data.get("task")
+    from_column = data.get("from_column")
+    to_column = data.get("to_column")
+    if task in kanban_data[from_column]:
+        kanban_data[from_column].remove(task)
+        kanban_data[to_column].append(task)
+    return jsonify({"status": "success", "kanban_data": kanban_data})
+
+@app.route('/delete_task', methods=['POST'])
+def delete_task():
+    data = request.get_json()
+    column = data.get("column")
+    task = data.get("task")
+    if task in kanban_data[column]:
+        kanban_data[column].remove(task)
+    return jsonify({"status": "success", "kanban_data": kanban_data})
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+
+
+
+
